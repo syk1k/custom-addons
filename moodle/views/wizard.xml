@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--This file enable the user to configure the moodle module form here it acts like a pop up window -->
+
+<odoo>
+
+    <record id="moodle_config_wizard" model="ir.ui.view">
+        <field name="name">Configure Moodle</field>
+        <field name="model">odoo.moodle</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="token"/>
+                </group>
+            </form>
+            <footer>
+                <p>Hello</p>
+            </footer>
+        </field>
+        <field name="target">new</field>
+    </record> <!-- View for configuration link to the act_window -->
+
+    <record id="create_course_wizard" model="ir.ui.view">
+        <field name="name">Create a Course</field>
+        <field name="model">moodle.course</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="category"/>
+                </group>
+            </form>
+            <footer>
+                <p>Hello</p>
+            </footer>
+        </field>
+        <field name="target">new</field>
+    </record> <!-- View for course creation link to the act_window -->
+
+    <record id="create_category_wizard" model="ir.ui.view">
+        <field name="name">Create a Category</field>
+        <field name="model">moodle.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name=""/>
+                    <field name=""/>
+                    <field name=""/>
+                    <field name=""/>
+                </group>
+            </form>
+            <footer>
+                <p>Hello</p>
+            </footer>
+        </field>
+        <field name="target">new</field>
+    </record> <!-- View for category creation link to the act_window -->
+
+
+
+
+    <act_window id="create_course_action" name="Configure Moodle" res_model="moodle.course" target="new"
+                view_id="create_course_wizard"
+    /> <!-- Action window for course creation -->
+
+    <act_window id="create_category_action" name="Configure Moodle" res_model="moodle.category" target="new"
+                view_id="create_category_wizard"
+    /> <!-- Action window for categogry creation -->
+
+    <act_window id="moodle_config_action" name="Configure Moodle" res_model="odoo.moodle" target="new"
+                view_id="moodle_config_wizard"
+    /> <!-- Action window for moodle configuration -->
+
+
+</odoo>

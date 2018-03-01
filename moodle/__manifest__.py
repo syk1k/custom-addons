@@ -19,6 +19,8 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/wizard.xml',
+        'views/moodle_menu.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
@@ -27,6 +29,7 @@
 
 
     # Installation information
+    'application': True,
     'auto_install': False,
     'installable': True,
 }
