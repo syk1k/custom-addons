@@ -10,14 +10,14 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="token"/>
+                    <field name="token" required="True"/>
                 </group>
+                <footer>
+                    <button name="configure" type="object" string="Save configuration" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
             </form>
-            <footer>
-                <p>Hello</p>
-            </footer>
         </field>
-        <field name="target">new</field>
     </record> <!-- View for configuration link to the act_window -->
 
     <record id="create_course_wizard" model="ir.ui.view">
@@ -26,14 +26,19 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="category"/>
+                    <field name="category" required="True"/>
+                    <field name="fullname" required="True"/>
+                    <field name="shortname" required="True"/>
+                    <field name="date_start" />
+                    <field name="date_end"/>
+                    <field name="summary"/>
                 </group>
+                <footer>
+                    <button name="create_course" type="object" string="Create" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
             </form>
-            <footer>
-                <p>Hello</p>
-            </footer>
         </field>
-        <field name="target">new</field>
     </record> <!-- View for course creation link to the act_window -->
 
     <record id="create_category_wizard" model="ir.ui.view">
@@ -42,27 +47,27 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name=""/>
-                    <field name=""/>
-                    <field name=""/>
-                    <field name=""/>
+                    <field name="category" required="True"/>
+                    <field name="name" required="True"/>
+                    <field name="id_number"/>
+                    <field name="description"/>
                 </group>
+                <footer>
+                    <button name="create_category" type="object" string="Create" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
             </form>
-            <footer>
-                <p>Hello</p>
-            </footer>
         </field>
-        <field name="target">new</field>
     </record> <!-- View for category creation link to the act_window -->
 
 
 
 
-    <act_window id="create_course_action" name="Configure Moodle" res_model="moodle.course" target="new"
+    <act_window id="create_course_action" name="Create a Course" res_model="moodle.course" target="new"
                 view_id="create_course_wizard"
     /> <!-- Action window for course creation -->
 
-    <act_window id="create_category_action" name="Configure Moodle" res_model="moodle.category" target="new"
+    <act_window id="create_category_action" name="Create a Category" res_model="moodle.category" target="new"
                 view_id="create_category_wizard"
     /> <!-- Action window for categogry creation -->
 

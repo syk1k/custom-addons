@@ -8,7 +8,7 @@
     <menuitem id="main_menu" name="Functionality" parent="top_menu"/>
 
     <menuitem id="config_moodle" name="Configure Moodle" parent="main_menu" action="moodle_config_action"/>
-    <menuitem id="create_course" name="Create Course" parent="main_menu" action="create_course_wizard" />
-    <menuitem id="create_categorie" name="Create Category" parent="main_menu" action="create_category_wizard"/>
+    <menuitem id="create_course" name="Create Course" parent="main_menu" action="create_course_action" />
+    <menuitem id="create_categorie" name="Create Category" parent="main_menu" action="create_category_action"/>
 
 </odoo>
