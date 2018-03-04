@@ -26,7 +26,7 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="category" required="True"/>
+                    <field name="category"/>
                     <field name="fullname" required="True"/>
                     <field name="shortname" required="True"/>
                     <field name="date_start" />
@@ -47,9 +47,8 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="category" required="True"/>
+                    <field name="category"/>
                     <field name="name" required="True"/>
-                    <field name="id_number"/>
                     <field name="description"/>
                 </group>
                 <footer>
@@ -63,12 +62,12 @@
 
 
 
-    <act_window id="create_course_action" name="Create a Course" res_model="moodle.course" target="new"
-                view_id="create_course_wizard"
+    <act_window id="create_course_action" name="Create a Course" res_model="moodle.course"
+                view_id="create_course_wizard" view_mode="tree,form"
     /> <!-- Action window for course creation -->
 
-    <act_window id="create_category_action" name="Create a Category" res_model="moodle.category" target="new"
-                view_id="create_category_wizard"
+    <act_window id="create_category_action" name="Create a Category" res_model="moodle.category"
+                view_id="create_category_wizard" view_mode="tree,form"
     /> <!-- Action window for categogry creation -->
 
     <act_window id="moodle_config_action" name="Configure Moodle" res_model="odoo.moodle" target="new"

@@ -16,9 +16,8 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
+        #'security/ir.model.access.csv',
+        'views/list_view.xml',
         'views/wizard.xml',
         'views/moodle_menu.xml'
     ],

@@ -29,23 +29,47 @@ class Moodle(models.Model):
         request = requests.get(url=domain + webservice_url, params=parameters)
         request = request.json()
 
-        if 'siteurl' in request:
-            if request['siteurl'] == domain:
-                print('Hello')
-        elif 'exception' in request:
+        if 'exception' in request:
             if request['exception'] == "moodle_exception":
                 if request['errorcode'] == 'invalidtoken':
-                    print(request['message'])
-                    print('Make sure you enter the correct token')
-                    print("If you don't have any token yet refer to moodle"
-                          + "administrator to find out how to get one ")
-            elif request['exception'] == "webservice_access_exception":
-                if request['errorcode'] == "accessexception":
-                    print(request['message'])
-                    print("Check wether your token has the access to view the site info")
-                    print("For more information about token accesses refer to your moodle "
-                          + "administrator")
+                    return self._reopen_form()
 
+        # if 'siteurl' in request:
+        #     if request['siteurl'] == domain:
+        #         print('Hello')
+        # elif 'exception' in request:
+        #     if request['exception'] == "moodle_exception":
+        #         if request['errorcode'] == 'invalidtoken':
+        #             return self._reopen_form()
+        #     elif request['exception'] == "webservice_access_exception":
+        #         if request['errorcode'] == "accessexception":
+        #             print(request['message'])
+        #             print("Check wether your token has the access to view the site info")
+        #             print("For more information about token accesses refer to your moodle "
+        #                   + "administrator")
+
+                    
+    
+    @api.model
+    def create(self, vals):
+        self.search([]).unlink()
+        vals['id']=1
+        print(vals)
+        return super(Moodle, self).create(vals)
+
+
+    @api.multi
+    def _reopen_form(self):
+        self.ensure_one()
+        window = {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id':  self.id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new',
+        }
+        return window
 
 
 
@@ -57,12 +81,11 @@ class Category(models.TransientModel):
     _description = 'Moodle Category Table'
 
     categories = [
-        (0, 'Top'),
+        ('0', 'Top'),
     ]
 
     category = fields.Selection(string='Category', selection=categories, default=0)
     name = fields.Char(string='Name')
-    id_number = fields.Char(string='ID Number')
     description = fields.Html(string='Description')
 
 
@@ -72,7 +95,6 @@ class Category(models.TransientModel):
         categories = {
             "categories[0][name]": self.name,
             "categories[0][parent]": self.category,
-            "categories[0][idnumber]": self.id_number,
             "categories[0][description]": self.description,
             "categories[0][descriptionformat]": 1
         }
@@ -91,6 +113,8 @@ class Category(models.TransientModel):
         print(request)
 
         print(token)
+        print(type(categories["categories[0][parent]"]))
+        print(categories)
 
 
 
@@ -99,10 +123,10 @@ class Course(models.TransientModel):
     _description = 'Moodle Course Table'
 
     categories = [
-        (1, 'Miscellaneous'),
+        ('1', 'Miscellaneous'),
     ]
 
-    category = fields.Selection(string='Category', selection=categories, default=1)
+    category = fields.Selection(string='Category', selection=categories, default='1')
     fullname = fields.Char(string='Full Name')
     shortname = fields.Char(string='Short Name')
     date_start = fields.Datetime(string='Start Date')
@@ -116,8 +140,8 @@ class Course(models.TransientModel):
             "courses[0][shortname]": self.shortname,
             "courses[0][categoryid]": self.category,
             "courses[0][summary]": self.summary,
-            "courses[0][startdate]": self.date_start,
-            "courses[0][enddate]": self.date_end,
+            #"courses[0][startdate]": self.date_start,
+            #"courses[0][enddate]": self.date_end,
         }
 
         token = self.env['odoo.moodle'].search([('id', '=', 6)]).token
@@ -130,10 +154,11 @@ class Course(models.TransientModel):
             'wsfunction': 'core_course_create_courses',
             'moodlewsrestformat': 'json'
         }
-        # request = requests.request("POST", url=domain + webservice_url, params=parameters, data=courses)
-        # request = request.json()
-        #
-        # print(self.env.user.name)
-        # print(courses["courses[0][fullname]"])
+        request = requests.request("POST", url=domain + webservice_url, params=parameters, data=courses)
+        request = request.json()
+
+        print(request)
+        print(self.env.user.name)
+        print(courses)
 
         print(token)

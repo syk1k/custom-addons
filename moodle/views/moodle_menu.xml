@@ -7,8 +7,10 @@
     <menuitem id="top_menu" name="Moodle" /> <!-- This is the top level menu. Bellow is list its children -->
     <menuitem id="main_menu" name="Functionality" parent="top_menu"/>
 
+    <!--<menuitem id="course_list_view_menu" name="Courses" parent="main_menu" action="course_list_action"/>-->
     <menuitem id="config_moodle" name="Configure Moodle" parent="main_menu" action="moodle_config_action"/>
     <menuitem id="create_course" name="Create Course" parent="main_menu" action="create_course_action" />
     <menuitem id="create_categorie" name="Create Category" parent="main_menu" action="create_category_action"/>
+
 
 </odoo>

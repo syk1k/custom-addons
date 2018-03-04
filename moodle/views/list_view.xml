@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+
+    <record id="course_list_view" model="ir.ui.view">
+        <field name="name">Courses</field>
+        <field name="model">moodle.course</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="fullname"/>
+                <field name="shortname"/>
+                <field name="summary"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>
