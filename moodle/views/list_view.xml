@@ -2,7 +2,7 @@
 
 <odoo>
 
-    <record id="course_list_view" model="ir.ui.view">
+    <record id="courses_list_view" model="ir.ui.view">
         <field name="name">Courses</field>
         <field name="model">moodle.course</field>
         <field name="arch" type="xml">
@@ -10,6 +10,18 @@
                 <field name="fullname"/>
                 <field name="shortname"/>
                 <field name="summary"/>
+            </tree>
+        </field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="category_list_view" model="ir.ui.view">
+        <field name="name">Categories</field>
+        <field name="model">moodle.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="description"/>
             </tree>
         </field>
     </record>

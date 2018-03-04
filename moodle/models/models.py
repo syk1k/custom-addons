@@ -73,7 +73,6 @@ class Moodle(models.Model):
 
 
 
-
 class Category(models.TransientModel):
     """ This model creates a table to temporary store new created categories."""
 
