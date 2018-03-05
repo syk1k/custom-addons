@@ -12,7 +12,6 @@
                 <field name="summary"/>
             </tree>
         </field>
-        <field name="target">new</field>
     </record>
 
     <record id="category_list_view" model="ir.ui.view">

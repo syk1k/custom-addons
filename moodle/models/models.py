@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import string
-
 import requests
 
 from odoo import models, fields, api
@@ -33,21 +31,6 @@ class Moodle(models.Model):
             if request['exception'] == "moodle_exception":
                 if request['errorcode'] == 'invalidtoken':
                     return self._reopen_form()
-
-        # if 'siteurl' in request:
-        #     if request['siteurl'] == domain:
-        #         print('Hello')
-        # elif 'exception' in request:
-        #     if request['exception'] == "moodle_exception":
-        #         if request['errorcode'] == 'invalidtoken':
-        #             return self._reopen_form()
-        #     elif request['exception'] == "webservice_access_exception":
-        #         if request['errorcode'] == "accessexception":
-        #             print(request['message'])
-        #             print("Check wether your token has the access to view the site info")
-        #             print("For more information about token accesses refer to your moodle "
-        #                   + "administrator")
-
                     
     
     @api.model
@@ -88,17 +71,21 @@ class Category(models.TransientModel):
     description = fields.Html(string='Description')
 
 
+    @api.model
+    def create(self, vals):
+        self.create_category(vals)
+        return super(Category, self).create(vals)
 
 
-    def create_category(self):
+    def create_category(self,vals):
         categories = {
-            "categories[0][name]": self.name,
-            "categories[0][parent]": self.category,
-            "categories[0][description]": self.description,
+            "categories[0][name]": vals['name'],
+            "categories[0][parent]": vals['category'],
+            "categories[0][description]": vals['description'],
             "categories[0][descriptionformat]": 1
         }
 
-        token = self.env['odoo.moodle'].search([('id', '=', 6)]).token
+        token = self.env['odoo.moodle'].search([('create_uid', '=', self.env.user.id)]).token
 
         domain = "http://localhost:8888"
         webservice_url = "/webservice/rest/server.php?"
@@ -117,6 +104,8 @@ class Category(models.TransientModel):
 
 
 
+
+
 class Course(models.TransientModel):
     _name = 'moodle.course'
     _description = 'Moodle Course Table'
@@ -125,6 +114,7 @@ class Course(models.TransientModel):
         ('1', 'Miscellaneous'),
     ]
 
+    course_id = fields.Integer()
     category = fields.Selection(string='Category', selection=categories, default='1')
     fullname = fields.Char(string='Full Name')
     shortname = fields.Char(string='Short Name')
@@ -132,18 +122,33 @@ class Course(models.TransientModel):
     date_end = fields.Datetime(string='End Date')
     summary = fields.Html(string='Summary')
 
+    @api.multi
+    def _reopen_form(self):
+        window = {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_type': 'form',
+            'view_mode': 'form',
+        }
+        return window
 
-    def create_course(self):
+    @api.model
+    def create(self, vals):
+        self.create_course(vals)
+        return super(Course, self).create(vals)
+
+    def create_course(self, vals):
         courses = {
-            "courses[0][fullname]": self.fullname,
-            "courses[0][shortname]": self.shortname,
-            "courses[0][categoryid]": self.category,
-            "courses[0][summary]": self.summary,
+            "courses[0][fullname]": vals['fullname'],
+            "courses[0][shortname]": vals['shortname'],
+            "courses[0][categoryid]": vals['category'],
+            "courses[0][summary]": vals['summary'],
             #"courses[0][startdate]": self.date_start,
             #"courses[0][enddate]": self.date_end,
         }
 
-        token = self.env['odoo.moodle'].search([('id', '=', 6)]).token
+        token = self.env['odoo.moodle'].search([('create_uid', '=', self.env.user.id)]).token
 
 
         domain = "http://localhost:8888"
@@ -155,9 +160,50 @@ class Course(models.TransientModel):
         }
         request = requests.request("POST", url=domain + webservice_url, params=parameters, data=courses)
         request = request.json()
+        print(request)
+
+        if 'exception' in request:
+            if request['exception']=='webservice_access_exception':
+                if request['errorcode']=='accessexception':
+                    print('error')
+                    return self._reopen_form()
+
+
+    def update_course(self, vals):
+        pass
+
+
+    def get_courses(self):
+        token = self.env['odoo.moodle'].search([('create_uid', '=', self.env.user.id)]).token
+        domain = "http://localhost:8888"
+        webservice_url = "/webservice/rest/server.php?"
+        parameters = {
+            "wstoken":token,
+            'wsfunction': 'core_course_get_courses',
+            'moodlewsrestformat': 'json'
+            }
+        request = requests.get(url=domain+webservice_url, params=parameters)
+        request = request.json()
 
         print(request)
-        print(self.env.user.name)
-        print(courses)
 
-        print(token)
+        for req in request:
+            try:
+                self.create({
+                    'id': req['id'], 
+                    'category':req['categoryid'],
+                    'fullname':req['fullname'], 
+                    'shortname':req['shortname'],
+                    'summary': req['summary']
+                    }
+                )
+            except Exception:
+                print('Course not created')
+
+
+
+class Database(models.TransientModel):
+    _name = "moodle.database"
+    _description = "Used to refresh the database"
+
+    data_base_id = fields.Integer(string="Database")

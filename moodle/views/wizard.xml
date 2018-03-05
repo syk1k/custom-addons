@@ -25,14 +25,20 @@
         <field name="model">moodle.course</field>
         <field name="arch" type="xml">
             <form>
-                <group>
-                    <field name="category"/>
-                    <field name="fullname" required="True"/>
-                    <field name="shortname" required="True"/>
-                    <field name="date_start" />
-                    <field name="date_end"/>
-                    <field name="summary"/>
-                </group>
+                <sheet>
+                    <group>
+                        <field name="category"/>
+                        <field name="fullname" required="True"/>
+                        <field name="shortname" required="True"/>
+                        <field name="date_start" />
+                        <field name="date_end"/>
+                        <field name="summary"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="get_courses" type="object" string="get_courses" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
             </form>
         </field>
     </record> <!-- View for course creation link to the act_window -->
@@ -42,11 +48,13 @@
         <field name="model">moodle.category</field>
         <field name="arch" type="xml">
             <form>
-                <group>
-                    <field name="category"/>
-                    <field name="name" required="True"/>
-                    <field name="description"/>
-                </group>
+                <sheet>
+                    <group>
+                        <field name="category"/>
+                        <field name="name" required="True"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record> <!-- View for category creation link to the act_window -->
@@ -54,17 +62,19 @@
 
 
 
-    <act_window id="create_course_action" name="Create a Course" res_model="moodle.course"
-                view_mode="tree,form"
+    <act_window id="create_course_action" name="List of Courses" res_model="moodle.course"
+                view_mode="tree,form" target="current"
     /> <!-- Action window for course creation -->
 
-    <act_window id="create_category_action" name="Create a Category" res_model="moodle.category"
-                view_mode="tree,form"
+    <act_window id="create_category_action" name="List of Categories" res_model="moodle.category"
+                view_mode="tree,form" target="current"
     /> <!-- Action window for categogry creation -->
 
     <act_window id="moodle_config_action" name="Configure Moodle" res_model="odoo.moodle" target="new"
                 view_id="moodle_config_wizard"
     /> <!-- Action window for moodle configuration -->
+
+    <act_window id="refresh_database_action" name="Refresh the Database" res_model="moodle.database" view_mode="form,tree" target="new" />
 
 
 </odoo>
