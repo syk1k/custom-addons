@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<templates xml:space="preserve">
+<template id="template" xml:space="preserve">
 	<t t-extend="ListView.buttons">
 		<t t-jquery="button.o_list_button_add" t-operation="after">
-			<button type="object" class="btn btn-default btn-sm o_list_button_add">
-				Refresh
+			<button t-if="widget.moodle!='odoo.moodle'" type="button" class="btn btn-default btn-sm print_something_for_test">
+				Refresh				
 			</button>
 		</t>
 	</t>
-</templates>
+</template>

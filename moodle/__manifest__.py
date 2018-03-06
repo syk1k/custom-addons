@@ -25,6 +25,7 @@
         'views/list_view.xml',
         'views/wizard.xml',
         'views/moodle_menu.xml',
+        'views/tree_view_asset.xml',
     ],
     # only loaded in demonstration mode
     # 'demo': [

@@ -200,7 +200,9 @@ class Course(models.TransientModel):
             except Exception:
                 print('Course not created')
 
-
+    
+    def print_something_for_test(self):
+        print('Message from the button in the Header Refresh')
 
 class Database(models.TransientModel):
     _name = "moodle.database"
