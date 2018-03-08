@@ -2,9 +2,14 @@
 <template id="template" xml:space="preserve">
 	<t t-extend="ListView.buttons">
 		<t t-jquery="button.o_list_button_add" t-operation="after">
-			<button t-if="widget.moodle!='odoo.moodle'" type="button" class="btn btn-default btn-sm print_something_for_test">
-				Refresh				
-			</button>
+			<t t-name="tree_view_header">
+				<button t-if="widget.model=='moodle.course'" type="button" class="btn btn-default btn-sm o_refresh_course">
+					Refresh	Course		
+				</button>
+				<button t-if="widget.model=='moodle.category'" type="button" class="btn btn-default btn-sm o_refresh_category">
+					Refresh	Category		
+				</button>
+			</t>
 		</t>
 	</t>
 </template>

@@ -36,8 +36,6 @@ class Moodle(models.Model):
     @api.model
     def create(self, vals):
         self.search([]).unlink()
-        vals['id']=1
-        print(vals)
         return super(Moodle, self).create(vals)
 
 
@@ -73,8 +71,11 @@ class Category(models.TransientModel):
 
     @api.model
     def create(self, vals):
-        self.create_category(vals)
         return super(Category, self).create(vals)
+    
+    @api.model
+    def print_something_for_test(self):
+        print('Message from the button in the Header Refresh')
 
 
     def create_category(self,vals):
@@ -135,9 +136,15 @@ class Course(models.TransientModel):
 
     @api.model
     def create(self, vals):
-        self.create_course(vals)
+        try:
+            self.create_course(vals)
+        except Exception:
+            pass
         return super(Course, self).create(vals)
+    
 
+
+    @api.model
     def create_course(self, vals):
         courses = {
             "courses[0][fullname]": vals['fullname'],
@@ -167,13 +174,24 @@ class Course(models.TransientModel):
                 if request['errorcode']=='accessexception':
                     print('error')
                     return self._reopen_form()
+        else:
+            vals['course_id']==request['id']
+            try:
+                self.create(vals)
+            except Exception:
+                return('alert("Error from course creation")')
+
+    @api.model
+    def print_something_for_test(self, vals=None):
+        print('Message from the button in the Header Refresh')
 
 
-    def update_course(self, vals):
-        pass
-
-
+    @api.model
     def get_courses(self):
+        """First clear the odoo Database.
+        Then make a request toward moodle to get courses, fetch them to Odoo courses table."""
+
+        self.search([]).unlink()
         token = self.env['odoo.moodle'].search([('create_uid', '=', self.env.user.id)]).token
         domain = "http://localhost:8888"
         webservice_url = "/webservice/rest/server.php?"
@@ -184,28 +202,20 @@ class Course(models.TransientModel):
             }
         request = requests.get(url=domain+webservice_url, params=parameters)
         request = request.json()
-
         print(request)
 
         for req in request:
             try:
-                self.create({
-                    'id': req['id'], 
-                    'category':req['categoryid'],
-                    'fullname':req['fullname'], 
-                    'shortname':req['shortname'],
-                    'summary': req['summary']
-                    }
-                )
+                if req['id']==1:
+                    pass
+                else:
+                    self.create({
+                        'course_id': req['id'], 
+                        #'category':req['categoryid'],
+                        'fullname':req['fullname'], 
+                        'shortname':req['shortname'],
+                        'summary': req['summary']
+                        }
+                    )
             except Exception:
                 print('Course not created')
-
-    
-    def print_something_for_test(self):
-        print('Message from the button in the Header Refresh')
-
-class Database(models.TransientModel):
-    _name = "moodle.database"
-    _description = "Used to refresh the database"
-
-    data_base_id = fields.Integer(string="Database")

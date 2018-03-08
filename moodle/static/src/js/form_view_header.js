@@ -1,0 +1,23 @@
+odoo.define('moodle.form_view_header', function(require){
+    'use strict';
+    var core = require('web.core');
+    var FormView = require('web.FormView');
+    var Qweb = core.qweb;
+
+    FormView.include({
+        render_buttons: function($node){
+            this._super($node);
+            this.$buttons.find('.o_form_button_save').click(this.proxy('save_button_override'));            
+        },
+
+        save_button_override: function(){
+            if (this.model=='moodle.course'){
+                var Model = require('web.Model');
+                var custom_model = new Model('moodle.course');
+                //custom_model.call('create_course');
+            }else{
+                alert('Clicking save button form another model');
+            }            
+        }
+    });
+});

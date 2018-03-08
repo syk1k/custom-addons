@@ -35,10 +35,6 @@
                         <field name="summary"/>
                     </group>
                 </sheet>
-                <footer>
-                    <button name="get_courses" type="object" string="get_courses" class="oe_highlight"/>
-                    <button special="cancel" string="Cancel"/>
-                </footer>
             </form>
         </field>
     </record> <!-- View for course creation link to the act_window -->
@@ -74,7 +70,6 @@
                 view_id="moodle_config_wizard"
     /> <!-- Action window for moodle configuration -->
 
-    <act_window id="refresh_database_action" name="Refresh the Database" res_model="moodle.database" view_mode="form,tree" target="new" />
 
 
 </odoo>

@@ -12,7 +12,5 @@
     <menuitem id="config_moodle" name="Configure Moodle" parent="config_menu" action="moodle_config_action"/>
     <menuitem id="create_course" name="Courses" parent="main_menu" action="create_course_action" />
     <menuitem id="create_categorie" name="Categories" parent="main_menu" action="create_category_action"/>
-    <menuitem id="refresh_database" name="Refresh The Database" parent="config_menu" action="create_category_action" />
-
 
 </odoo>
