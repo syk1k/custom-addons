@@ -35,6 +35,8 @@ class Moodle(models.Model):
     
     @api.model
     def create(self, vals):
+        '''Since we only need one token per connexion, 
+        if the user tries to create a token, we then clear the table.'''
         self.search([]).unlink()
         return super(Moodle, self).create(vals)
 
@@ -60,28 +62,28 @@ class Category(models.TransientModel):
     _name = 'moodle.category'
     _description = 'Moodle Category Table'
 
-    categories = [
-        ('0', 'Top'),
-    ]
-
-    category = fields.Selection(string='Category', selection=categories, default=0)
+    category_id = fields.Integer()
+    category = fields.Many2one(string='Category', comodel_name='moodle.category', ondelete="set null")
+    category_parent = fields.Integer(related='category.category_id', string="Parent")
     name = fields.Char(string='Name')
     description = fields.Html(string='Description')
-
-
-    @api.model
-    def create(self, vals):
-        return super(Category, self).create(vals)
+    
+    
     
     @api.model
-    def print_something_for_test(self):
-        print('Message from the button in the Header Refresh')
+    def create(self, vals):
+        try:
+            self.create_category(vals)
+        except:
+            pass
+        return super(Category, self).create(vals)
 
+        
 
     def create_category(self,vals):
         categories = {
             "categories[0][name]": vals['name'],
-            "categories[0][parent]": vals['category'],
+            "categories[0][parent]": self.category_parent,
             "categories[0][description]": vals['description'],
             "categories[0][descriptionformat]": 1
         }
@@ -103,6 +105,32 @@ class Category(models.TransientModel):
         print(type(categories["categories[0][parent]"]))
         print(categories)
 
+    @api.model
+    def get_categories(self):
+        """First clear the odoo database.
+        Then make a request toward moodle to get categories, fetch them to the category table in odoo"""
+
+        self.search([]).unlink()
+        token = self.env['odoo.moodle'].search([('create_uid', '=', self.env.user.id)]).token
+        domain = "http://localhost:8888"
+        webservice_url = "/webservice/rest/server.php?"
+        parameters = {
+            "wstoken":token,
+            'wsfunction': 'core_course_get_categories',
+            'moodlewsrestformat': 'json'
+            }
+        request = requests.get(url=domain+webservice_url, params=parameters)
+        request = request.json()
+        for req in request:
+            try:
+                self.create({
+                    'category_id': req['id'],
+                    'name': req['name'],
+                    'description': req['description'],
+                })
+            except Exception:
+                print('Category not created')
+
 
 
 
@@ -111,12 +139,8 @@ class Course(models.TransientModel):
     _name = 'moodle.course'
     _description = 'Moodle Course Table'
 
-    categories = [
-        ('1', 'Miscellaneous'),
-    ]
-
     course_id = fields.Integer()
-    category = fields.Selection(string='Category', selection=categories, default='1')
+    category = fields.Many2one(string='Category', comodel_name='moodle.category')
     fullname = fields.Char(string='Full Name')
     shortname = fields.Char(string='Short Name')
     date_start = fields.Datetime(string='Start Date')

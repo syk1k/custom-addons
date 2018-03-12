@@ -16,14 +16,18 @@
         refresh_category: function(){
             var Model = require('web.Model');
             var custom_model = new Model('moodle.category');
-            custom_model.call('print_something_for_test');
+            custom_model.call('get_categories');
 
         },
 
         refresh_course: function(){
+            // since a course depends on a category when refreshing the list of courses,
+            // We automatically have to refresh the category list first
             var Model = require('web.Model');
-            var custom_model = new Model('moodle.course');
-            custom_model.call('get_courses');
+            var category_model = new Model('moodle.category');
+            category_model.call('get_categories');
+            var course_model = new Model('moodle.course');
+            course_model.call('get_courses');
         },
     });
 

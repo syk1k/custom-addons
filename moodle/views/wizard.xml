@@ -47,6 +47,7 @@
                 <sheet>
                     <group>
                         <field name="category"/>
+                        <field name="category_parent" readonly="True"/>
                         <field name="name" required="True"/>
                         <field name="description"/>
                     </group>
