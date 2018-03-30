@@ -11,6 +11,7 @@
             this._super($node);
             this.$buttons.find('.o_refresh_category').click(self.proxy('refresh_category'));
             this.$buttons.find('.o_refresh_course').click(self.proxy('refresh_course'));
+            this.$buttons.find('.o_list_button_add').click(self.proxy('create_button'));
         },
         
         refresh_category: function(){
@@ -29,6 +30,15 @@
             var course_model = new Model('moodle.course');
             course_model.call('get_courses');
         },
+
+        create_button: function(){
+            if (this.model=='moodle.category'){
+                var Model = require('web.Model');
+                var category_model = new Model('moodle.category');
+                //category_model.call('fetch_category');
+
+            }
+        }
     });
 
 });

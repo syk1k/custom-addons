@@ -2,6 +2,7 @@ odoo.define('moodle.form_view_header', function(require){
     'use strict';
     var core = require('web.core');
     var FormView = require('web.FormView');
+    var form_common = require('web.form_common');
     var Qweb = core.qweb;
 
     FormView.include({
@@ -15,9 +16,16 @@ odoo.define('moodle.form_view_header', function(require){
                 var Model = require('web.Model');
                 var custom_model = new Model('moodle.course');
                 //custom_model.call('create_course');
-            }else{
-                alert('Clicking save button form another model');
+            }
+            else{
+                //alert(this.model);
+                if (this.model=='moodle.category'){
+                    var Model = require('web.Model');
+                    var custom_model = new Model('moodle.category');
+                    //custom_model.call('create_category', {});
+                }      
             }            
         }
     });
+
 });

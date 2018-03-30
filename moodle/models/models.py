@@ -59,12 +59,15 @@ class Moodle(models.Model):
 class Category(models.TransientModel):
     """ This model creates a table to temporary store new created categories."""
 
+    #categories = fetch_category()
+
     _name = 'moodle.category'
     _description = 'Moodle Category Table'
 
+    id = fields.Integer(string='ID')
     category_id = fields.Integer()
-    category = fields.Many2one(string='Category', comodel_name='moodle.category', ondelete="set null")
-    category_parent = fields.Integer(related='category.category_id', string="Parent")
+    #category = fields.Many2one(string='Category', comodel_name='moodle.category', ondelete="set null")
+    category_parent = fields.Selection(selection='fetch_category', string="Parent Category")
     name = fields.Char(string='Name')
     description = fields.Html(string='Description')
     
@@ -73,17 +76,51 @@ class Category(models.TransientModel):
     @api.model
     def create(self, vals):
         try:
-            self.create_category(vals)
-        except:
+            self.create_category(vals) # To avoid creating already existing categories
+        except Exception:
             pass
         return super(Category, self).create(vals)
 
-        
 
-    def create_category(self,vals):
+    @api.model
+    def manipulate_category(self, vals):
+        record = self.search_count([('name', '=', vals['name']), ('description', '=', vals['description'])])
+        if record > 0:
+            pass
+        else:
+            self.create_category(vals)
+
+
+    @api.model
+    def fetch_category(self):
+        domain = "http://localhost:8888"
+        webservice_url = "/webservice/rest/server.php?"
+        token = self.env['odoo.moodle'].search([('create_uid', '=', self.env.user.id)]).token
+        parameters = {
+            "wstoken":token,
+            'wsfunction': 'core_course_get_categories',
+            'moodlewsrestformat': 'json'
+            }
+        request = requests.get(url=domain+webservice_url, params=parameters)
+        request = request.json()
+
+        if type(request)==list:
+            categories = []
+            for req in request:
+                category = req["id"],req["name"]
+                categories.append(category)
+            print(categories)
+            return categories
+
+
+
+    @api.model
+    def create_category(self, vals):
+        category_parent = self.search([('id', '=', vals['category'])]).category_id
+        print(category_parent)
         categories = {
             "categories[0][name]": vals['name'],
-            "categories[0][parent]": self.category_parent,
+            "categories[0][parent]": category_parent ,
             "categories[0][description]": vals['description'],
             "categories[0][descriptionformat]": 1
         }
@@ -100,9 +137,6 @@ class Category(models.TransientModel):
         request = requests.request("POST", url=domain + webservice_url, params=parameters, data=categories)
         request = request.json()
         print(request)
-
-        print(token)
-        print(type(categories["categories[0][parent]"]))
         print(categories)
 
     @api.model
@@ -127,6 +161,7 @@ class Category(models.TransientModel):
                     'category_id': req['id'],
                     'name': req['name'],
                     'description': req['description'],
+                    'category_parent': req['parent'],
                 })
             except Exception:
                 print('Category not created')
@@ -140,7 +175,7 @@ class Course(models.TransientModel):
     _description = 'Moodle Course Table'
 
     course_id = fields.Integer()
-    category = fields.Many2one(string='Category', comodel_name='moodle.category')
+    category = fields.Selection(string='Category', selection='fetch_category')
     fullname = fields.Char(string='Full Name')
     shortname = fields.Char(string='Short Name')
     date_start = fields.Datetime(string='Start Date')
@@ -165,6 +200,29 @@ class Course(models.TransientModel):
         except Exception:
             pass
         return super(Course, self).create(vals)
+
+    
+
+    @api.model
+    def fetch_category(self):
+        domain = "http://localhost:8888"
+        webservice_url = "/webservice/rest/server.php?"
+        token = self.env['odoo.moodle'].search([('create_uid', '=', self.env.user.id)]).token
+        parameters = {
+            "wstoken":token,
+            'wsfunction': 'core_course_get_categories',
+            'moodlewsrestformat': 'json'
+            }
+        request = requests.get(url=domain+webservice_url, params=parameters)
+        request = request.json()
+
+        if type(request)==list:
+            categories = []
+            for req in request:
+                category = req["id"],req["name"]
+                categories.append(category)
+            print(categories)
+            return categories
     
 
 
@@ -205,10 +263,6 @@ class Course(models.TransientModel):
             except Exception:
                 return('alert("Error from course creation")')
 
-    @api.model
-    def print_something_for_test(self, vals=None):
-        print('Message from the button in the Header Refresh')
-
 
     @api.model
     def get_courses(self):
@@ -235,7 +289,7 @@ class Course(models.TransientModel):
                 else:
                     self.create({
                         'course_id': req['id'], 
-                        #'category':req['categoryid'],
+                        'category':req['categoryid'],
                         'fullname':req['fullname'], 
                         'shortname':req['shortname'],
                         'summary': req['summary']
